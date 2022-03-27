@@ -2,7 +2,7 @@
 对 axios 的简单包装例子，提供常用的拦截器工具。
 
 
-## 快速使用
+## 🚀 快速使用
 ```ts
 import { CandyPaper, middler } from './src'
 import { axios } from 'axios'
@@ -39,7 +39,7 @@ http.request({
 ```
 
 
-## 拦截器
+## 🔧 拦截器
 Candypaper 自定义了一个自定义的拦截器队列，用于增加一个拦截器管理功能。
 例如：请求发起端可选择需要执行的拦截器，原axios需要在拦截器端做控制。
 
@@ -148,7 +148,7 @@ http.get('/', {
 ```
 
 
-## 中间件
+## ✨ 中间件
 因为自定义拦截器队列的存在，所以一些中间件存在`axios`和 `candypaper` 两种使用方式。
 
 ### 中间列表
