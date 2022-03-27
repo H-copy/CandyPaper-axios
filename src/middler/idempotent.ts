@@ -93,11 +93,6 @@ export class Idempotent<T = any> {
 }
 
 
-// export interface IdempotentAxiosInterceptor {
-//   request: Omit<AxiosInterceptorManager<AxiosRequestConfig>, 'handler'>
-//   response: Omit<AxiosInterceptorManager<AxiosResponse>, 'handler'>
-// }
-
 /**
  * axios去重拦截器
  * @summary
@@ -146,11 +141,6 @@ export class IdempotentForAxios<T = any>{
 
 }
 
-
-// export interface IdempotentCandyPaperInterceptor{
-//   request: Omit<Interceptor<AxiosRequestConfig>, 'handlers'>
-//   response: Omit<Interceptor<AxiosResponse>, 'handlers'>
-// } 
 
 /**
  * 去重中间件
