@@ -151,7 +151,7 @@ http.get('/', {
 ## ✨ 中间件
 因为自定义拦截器队列的存在，所以一些中间件存在`axios`和 `candypaper` 两种使用方式。
 
-### 中间列表
+### 列表
 - [x] timetamp 时间戳
 - [x] token 令牌
 - [x] tips 错误提示
