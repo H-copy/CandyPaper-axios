@@ -19,7 +19,8 @@ const print = (...args: any[]) => {
 const tips = new middler.TipsForCandyPaper(print)
 const idempotentForAxios = new middler.IdempotentForAxios() 
 // const idempotentForCandyParper = new middler.IdempotentForCandyParper() 
-const cache = new middler.CacheForAxios()
+// const cache = new middler.CacheForAxios()
+const cache = new middler.CacheForCandyPaper()
 
 const core = axios.create({
   baseURL: '/api',
@@ -31,8 +32,9 @@ const http = new CandyPaper(core)
 
 // idempotentForAxios.withInterceptor(http.candy.interceptors)
 // idempotentForCandyParper.withInterceptor(http.interceptor)
-// cache.withInterceptor(http.interceptors)
+cache.withInterceptor(http.interceptor)
 
+const timetamp = middler.timetamp()
 
 http.interceptor.request
 .use(
@@ -43,12 +45,12 @@ http.interceptor.request
 )
 .use(
   'timetamp',
-  middler.timetamp()
+  timetamp
 )
 .use(
   'req1',
   (v: AxiosRequestConfig) => {
-    console.log('req 1', v)
+    // console.log('req 1', v)
     return v
   }
 )
@@ -72,13 +74,21 @@ http.interceptor.response
   'res2',
   (v: AxiosResponse) => {
     console.log('res 2')
-    return Promise.reject('xxx')
+    // return Promise.reject('xxx')
     return v
   }
 )
 
 tips.withInterceptor(http.interceptor)
 
+
+http.interceptor.request.useOnce(
+  'key',
+  (ctx: AxiosRequestConfig) => {
+    console.log('once')
+    return ctx
+  }
+)
 
 function main(){
 
@@ -91,27 +101,28 @@ function main(){
       // 'res1',
       // 'res2',
       // 'tips',
-      // 'timetamp'
+      'timetamp'
     ])
   })
+  
 
-  http.request({
-    url: '/',
-    $cache: true,
-    $intercepteFilter: interceptor.Interceptor.excluedByKeys([
-      // 'req1',
-      // 'req2',
-      // 'res1',
-      // 'res2',
-      // 'tips',
-      // 'timetamp'
-    ])
-  })
-  .then(
-    d => console.log('success: ')
-  ).catch(
-    e => console.log('error: ')
-  )
+  setTimeout(() => {
+    http.request({
+      url: '/',
+      $cache: true,
+      $intercepteFilter: interceptor.Interceptor.excluedByKeys([
+        // 'req1',
+        // 'req2',
+        // 'res1',
+        // 'res2',
+        // 'tips',
+        'timetamp'
+      ])
+    })
+
+  }, 1000)
+
+
   
 }
 

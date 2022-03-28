@@ -143,7 +143,7 @@ export class IdempotentForAxios<T = any>{
 
 
 /**
- * 去重中间件
+ * candyPaper 去重中间件
  * @summary
  * 基于中间件模式的, 去重封装
  * @function adapterIn 请求端拦截

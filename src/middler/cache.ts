@@ -1,26 +1,35 @@
 import { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { is } from 'ramda'
-import { AxiosInterceptor } from '../common'
-import { dataToString } from '../utils'
+import { AxiosInterceptor, CandyInterceptor } from '../common'
+import { dataToString, LStorage, StorageType } from '../utils'
+
 
 function defSaveKey(){
   return new Date().getTime() + (Math.random() * 100).toFixed(0)
 }
 
+
+/**
+ * 缓存仓库定义
+ */
 export interface ICache<D = any> {
-  save(data: D, k: IndexKey): IndexKey
+  // 缓存
+  save(data: D, k?: IndexKey): IndexKey
+  // 取出
   take(k: IndexKey): D
+  // 删除
   delete(k: IndexKey): void
+  // 判断
   has(k: IndexKey): boolean
 }
 
-export class CacheByMap<T = any>{
-  protected _store  = new Map<IndexKey, any>() 
-  creatSaveKey: (ctx?: T) => IndexKey
 
-  constructor(creatSaveKey: (ctx?: T) => IndexKey = defSaveKey){
-    this.creatSaveKey = creatSaveKey
-  }
+/**
+ * 基于map的缓存
+ */
+export class CacheByMap<T = any> implements ICache {
+  protected _store  = new Map<IndexKey, any>() 
+  creatSaveKey: (ctx?: T) => IndexKey = defSaveKey
 
   save<V = T>(data?: V, key?: IndexKey){
     key = key || this.creatSaveKey()
@@ -46,6 +55,41 @@ export class CacheByMap<T = any>{
 
 
 /**
+ * 基于map的缓存
+ */
+export class CacheByStorage<T = any> implements ICache {
+  protected _store: LStorage
+
+  creatSaveKey: (ctx?: T) => string = defSaveKey
+
+  constructor(type?: StorageType){
+    this._store = new LStorage(type)
+  }
+
+  save<V = T>(data?: V, key?: string){
+    key = key || this.creatSaveKey()
+    this._store.$setItem(key, data)
+    return key
+  }
+  
+  take(key: string){
+    return this._store.$getItem(key)
+  }
+
+  delete(key: string){
+    if(!this.has(key)){
+      return
+    }
+    this._store.$delete(key)
+  }
+
+  has(key: string){
+    return this._store.$getItem(key) !== undefined
+  }
+}
+
+
+/**
  * 默认缓存key生成器
  * @param ctx 执行上下文
  * @returns key
@@ -58,15 +102,24 @@ export function defInterceptorSaveKey(ctx: AxiosRequestConfig){
   })
 }
 
-export class CacheForAxios<T = AxiosRequestConfig>{
+
+export class Cache<T = AxiosRequestConfig>{
 
   protected _cache: ICache = new CacheByMap<T>()
+  protected _emptyFlag = 'cacheEmptyFlag'
 
   creatSaveKey = defInterceptorSaveKey
   constructor(cache?: ICache<T>){
     this._cache = cache || this._cache
   }
 
+  /**
+   * 缓存拦截器入口
+   * @summary
+   * 1. 判断是否存在缓存
+   * 2. 无缓存，向仓库中追加空值占位
+   * 3. 有缓存，修改请求适配器(跳过请求)，将缓存返回。
+   */
   adapterIn(){
     return (ctx: AxiosRequestConfig) => {
       const key = this.creatSaveKey(ctx)
@@ -82,29 +135,44 @@ export class CacheForAxios<T = AxiosRequestConfig>{
         }
       }
       
-      if(this._cache.has(key)){
+      const _d = this._cache.take(key)
+      if(_d && _d !== this._emptyFlag){
         // 替换真实请求
-        ctx.adapter = () => Promise.resolve(this._cache.take(key))
+        ctx.adapter = () => Promise.resolve(_d)
       }else{
         // 可缓存标记
-        this._cache.save(null, key)
+        this._cache.save(this._emptyFlag, key)
       }
-
       return ctx
     }
   }
-
+  
+  /**
+   * 缓存出口
+   * @summary
+   * 判断是否存在且为空值占位符,
+   * 如果为空值占位符缓存请求数据, 供 adapterIn 使用
+   */
   adapterOut(){
     return (ctx: AxiosResponse) => {
       const key = this.creatSaveKey(ctx.config)
-      if(this._cache.has(key)){
+      const _d = this._cache.take(key)
+      if(ctx.config.$cache && _d !== this._emptyFlag){
         this._cache.save(ctx, key)
       }
       return ctx
     }
   }
+}
 
-  withInterceptor(interceptor: AxiosInterceptor){
+
+// axios 接口适配
+export class CacheForAxios<T> extends Cache<T>{
+  constructor(cache?: ICache<T>) {
+    super(cache)
+  }
+
+  withInterceptor(interceptor: AxiosInterceptor) {
     const reqCancelKey = interceptor.request.use(
       this.adapterIn()
     )
@@ -114,6 +182,38 @@ export class CacheForAxios<T = AxiosRequestConfig>{
     )
     return [reqCancelKey, resCancelKey]
   }
-  
 }
 
+// candyPaper 接口适配
+export class CacheForCandyPaper<T> extends Cache<T>{
+  constructor(cache?: ICache<T>) {
+    super(cache)
+  }
+
+  withInterceptor(interceptor: CandyInterceptor, key:IndexKey = 'cache') {
+    interceptor.request.use(
+      key,
+      this.adapterIn()
+    )
+
+   interceptor.response.use(
+      key,
+      this.adapterOut()
+    )
+    return [key, key]
+  }
+}
+
+
+export const cahceForPromise = <T>(cache: ICache<T>) => <A>(key:string, api: (...args: A[]) => Promise<T>) => {
+  return (...args: A[]) => {
+      if (cache.has(key)) {
+        return cache.take(key)
+      }
+      
+      return  api.apply(api, args).then(d => {
+        cache.save(d, key)
+        return d
+      })
+    }
+}

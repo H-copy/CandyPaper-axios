@@ -1,10 +1,8 @@
 import axios from 'axios'
 import type { AxiosRequestConfig, AxiosInstance, AxiosResponse } from 'axios'
-import { Interceptor, InterceptorOptions } from './interceptor'
+import { Interceptor } from './interceptor'
 import { is } from 'ramda'
 
-axios.interceptors.request
-axios.interceptors.response
 
 export class CandyPaper{
 
@@ -28,19 +26,25 @@ export class CandyPaper{
   }
 
   // 重组请求拦截器列表
-  protected resetInterceptors(ctx: InterceptorOptions){
+  protected resetInterceptors(ctx: AxiosRequestConfig){
     const interceptorRequests = this.candy.interceptors.request.handlers.filter(i => !i.key)
     const interceptorResponses = this.candy.interceptors.response.handlers.filter(i => !i.key)
+    const requestOnceList = ctx?.$interceptor?.request || []
+    const responseOnceList = ctx?.$interceptor?.response || []
+    
+    requestOnceList.forEach(i => this.interceptor.request.useOnce(i))
+    responseOnceList.forEach(i => this.interceptor.response.useOnce(i))
 
-    const middleRequests  = this.interceptor.request.queupUp(ctx).sort(() => -1)
+    const middleRequests  = this.interceptor.request.queupUp(ctx)
     this.candy.interceptors.request.handlers = [
       ...interceptorRequests,
       ...middleRequests
-    ].sort(() => -1)
+    ].sort(() => -1) // 反序, 保证执行顺序与注册顺序一致
     
     const middleResponses = this.interceptor.response.queupUp(ctx)
     this.candy.interceptors.response.handlers = [
       ...interceptorResponses,
+      // ...responseOnceList,
       ...middleResponses
     ]
   }
