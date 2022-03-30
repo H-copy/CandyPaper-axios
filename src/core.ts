@@ -56,7 +56,7 @@ export class CandyPaper{
     return this.candy(options)
   }
 
-  get<T>(url: string, options: Omit<AxiosRequestConfig<T>, 'url' | 'method'> ){
+  get<T>(url: string, options?: Omit<AxiosRequestConfig<T>, 'url' | 'method'> ){
     return this.request({
       url,
       method: 'get',
@@ -64,7 +64,7 @@ export class CandyPaper{
     })
   }
 
-  post<T>(url: string, options: Omit<AxiosRequestConfig<T>, 'url' | 'method'>) {
+  post<T>(url: string, options?: Omit<AxiosRequestConfig<T>, 'url' | 'method'>) {
     return this.request({
       url,
       method: 'post',
