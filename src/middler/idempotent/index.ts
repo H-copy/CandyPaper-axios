@@ -81,7 +81,7 @@ export class Idempotent<T = any> {
 
   /**
    * 取消请求并清除source
-   * @param key 缓存key
+   * @param keykey
    * @param message 
    */
   cancel(key: string, message?: string){

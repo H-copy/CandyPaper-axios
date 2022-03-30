@@ -151,7 +151,6 @@ http.get('/', {
   }
 })
 
-
 ```
 
 
@@ -159,132 +158,11 @@ http.get('/', {
 因为自定义拦截器队列的存在，所以一些中间件存在`axios`和 `candypaper` 两种使用方式。
 
 ### 列表
-- [x] timetamp 时间戳
-- [x] token 令牌
-- [x] tips 错误提示
-- [x] cache 请求缓存
-- [x] idempotent 幂等
+- [x] [timetamp 时间戳](./src/middler/timetamp/README.md)
+- [x] [token 令牌](./src/middler/token/README.md)
+- [x] [tips 错误提示](./src/middler//tips/README.md)
+- [x] [cache 请求缓存](./src//middler/cache//README.md)
+- [x] [idempotent 幂等](./src/middler/idempotent/README.md)
 - [ ] log 日志
 - [ ] status 状态码
 - [ ] playback 回放
-
-
-### timetamp 时间戳
-防止请求缓存, 未每条url添加自定义时间戳。
-```ts
-import { middler } from './src'
-
-// 模式使用
-http.interceptor.request
-.use(
-  middler.timetamp()
-)
-
-http.request({
-  baseUrl: 'https://www.baidu.com'
-  url:'/'
-})
-//  https://www.baidu.com/?t=1648355691457
-
-
-// 指定时间戳参数名, 
-middler.timetamp('timetamp')
-// https://www.baidu.com/?timetamp=1648355691457
-
-// 自定义时间戳生成器
-middler.timetamp('noCanche', () => {
-  return Meth.random().fixed(8)
-})
-
-```
-### token 令牌设置
-设置请求头登录令牌
-```ts
-
-http.interceptor.request
-  // 固定token
-.use(
-  middler.token('xxx-xxx-xx')
-)
-
-// 动态token
-middler.token((ctx: AxiosRequestConfig) => {
-  return sessionstorage.getItem('token')
-})
-
-// 指定header挂载属性, 默认 token
-middler.token('xxx-xxx-xx', 'authentication')
-
-```
-
-### tips 消息提示
-根据请求上下文，判断是否显示提示信息。例如：错误拦截弹窗提示
-```ts
-
-// candyPaper 拦截器
-const tipsForCandyPaper = new middler.TipsForCandyPaper()
-tipsForCandyPaper.withInterceptor(http.interceptor.response)
-
-// axios 拦截器
-const tipsForAxios = new middler.TipsForAxios()
-tipsForCandyPaper.withInterceptor(http.interceptor.response)
-
-// 指定输入函数， 默认 console.log
-const print = (...args: string[]) => {
-  const body = document.getElementsByTagName('body')[0]
-  body.innerHTML = `
-    ${body.innerHTML},
-    ${args.join('\n')}
-  `
-}
-const tips = new middler.TipsForCandyPaper(print)
-
-```
-
-### cache 缓存
-缓存请求，如果存在匹配请求，返回已缓存值。
-```ts
-
-// axios 拦截器
-const cache = new middler.CacheForAxios()
-cache.withInterceptor(http.candy.interceptors)
-
-// 使用
-http.request({
-  ...,
-  // 开启缓存
-  $cache: true
-})
-
-http.request({
-  ...,
-  // 缓存有效期
-  $cache: new Date().getTime() + 1000 * 20
-})
-
-
-```
-
-
-### idempotent 幂等(节流)
-多条重复请求时，取消前置请求，只发送最后一条。
-```ts
-
-// candyPaper 拦截器
-const idempotentForCandyParper = new middler.IdempotentForCandyParper()
-idempotentForCandyParper.withInterceptor(http.interceptor)
-
-// axios 拦截器
-const idempotentForAxios = new middler.IdempotentForAxios() 
-idempotentForAxios.withInterceptor(http.candy.interceptors)
-
-
-// 自定义判断key
-idempotentForCandyParper.creatSaveKey = (ctx: AxiossRequestConfig) => {
-  return ctx.url
-}
-
-
-```
-
-

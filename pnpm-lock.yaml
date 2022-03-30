@@ -13,7 +13,6 @@ specifiers:
   typescript: ^4.5.4
 
 dependencies:
-  axios: 0.26.1
   ramda: 0.28.0
 
 devDependencies:
@@ -21,6 +20,7 @@ devDependencies:
   '@rollup/plugin-node-resolve': 13.1.3_rollup@2.70.1
   '@rollup/plugin-typescript': 8.3.1_8fb0118e9d69f3600cbb8f144f7d456c
   '@types/ramda': 0.28.5
+  axios: 0.26.1
   rollup: 2.70.1
   rollup-plugin-dts: 4.2.0_rollup@2.70.1+typescript@4.6.3
   tslib: 2.3.1
@@ -149,7 +149,7 @@ packages:
       follow-redirects: 1.14.9
     transitivePeerDependencies:
       - debug
-    dev: false
+    dev: true
 
   /balanced-match/1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
@@ -224,7 +224,7 @@ packages:
     peerDependenciesMeta:
       debug:
         optional: true
-    dev: false
+    dev: true
 
   /fs.realpath/1.0.0:
     resolution: {integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==}
