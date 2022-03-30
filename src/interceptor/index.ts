@@ -5,8 +5,7 @@ import {
   Rejected,
   RunWhen,
 } from 'axios'
-import { Lmap } from '../utils'
-import  { is } from 'ramda'
+import { Lmap, asserts } from '../utils'
 
 interface  InterceptorItem <T = any> extends InterceptorHandler <T> {
   key: IndexKey
@@ -101,13 +100,13 @@ export class Interceptor<T = AxiosRequestConfig>{
     let once:boolean = false
     let runWhen: RunWhen | undefined
     
-    if(is(Function, key)){ 
+    if(asserts.isFunction(key)){ 
       onRejected = onFulfilled
       onFulfilled = key
       key = onFulfilled.key || this.createDefKey()
     }
     
-    if(is(Object, key)){
+    if(asserts.isObject(key)){
       const options = key as InterceptorHandler<T>
       key = options.key || this.createDefKey()
       onFulfilled = options.fulfilled
@@ -161,7 +160,7 @@ export class Interceptor<T = AxiosRequestConfig>{
   eject(key: Fulfilled):void
   eject(key: IndexKey | Fulfilled){
     let _k: IndexKey | undefined
-    if(is(Function, key)){
+    if(asserts.isFunction(key)){
         _k = (key as Fulfilled).key
     }else{
       _k = key

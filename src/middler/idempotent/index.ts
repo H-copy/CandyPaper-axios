@@ -1,7 +1,5 @@
-import type { CancelTokenSource, AxiosRequestConfig, AxiosResponse, AxiosInterceptorManager } from 'axios'
-import axios from 'axios'
-import { is } from 'ramda'
-import { Lmap, dataToString } from '../../utils'
+import type { CancelTokenSource, CancelTokenStatic, AxiosRequestConfig, AxiosResponse, AxiosInterceptorManager } from 'axios'
+import { Lmap, dataToString, asserts } from '../../utils'
 import { AxiosInterceptor, CandyInterceptor } from '../../common'
 
 
@@ -34,12 +32,15 @@ export function defSaveKey(ctx: IdempotentOptions){
  */
 export class Idempotent<T = any> {
 
+  cancelToken: CancelTokenStatic
+
    _map:Lmap<string, CancelTokenSource> = new Lmap()
   
   // 自定义缓存key生成器
   creatSaveKey: (ctx: T) => string
 
-  constructor( creatSaveKey?: (ctx: T) => string){
+  constructor(cancelToken: CancelTokenStatic, creatSaveKey?: (ctx: T) => string){
+    this.cancelToken = cancelToken
     this.creatSaveKey = creatSaveKey || defSaveKey
   }
   
@@ -58,7 +59,7 @@ export class Idempotent<T = any> {
     if(this._map.has(key)){
       this.cancel(key, message || key)
     }
-    const source = axios.CancelToken.source()
+    const source = this.cancelToken.source()
     this._map.$set(key, source)
     return source
   }
@@ -72,7 +73,7 @@ export class Idempotent<T = any> {
    */
   outPip(ctx: T, message?: string){
     let key = ''
-    if(is(Object, ctx)){
+    if(asserts.isObject(ctx)){
       key  = this.creatSaveKey(ctx)
     }
     this.cancel(key, message)
@@ -104,8 +105,8 @@ export class Idempotent<T = any> {
 export class IdempotentForAxios<T = any>{
   protected idempotent: Idempotent<T>
   
-  constructor(idempotent?: Idempotent<T>){
-    this.idempotent = idempotent || new Idempotent()
+  constructor(idempotent: Idempotent<T>){
+    this.idempotent = idempotent
   }
 
   adapterIn(){
@@ -154,8 +155,8 @@ export class IdempotentForCandyParper<T = any>{
   
   protected idempotent: Idempotent<T>
   
-  constructor(idempotent?: Idempotent<T>){
-    this.idempotent = idempotent || new Idempotent<T>()
+  constructor(idempotent: Idempotent<T>){
+    this.idempotent = idempotent
     this.adapterIn.bind(this)
     this.adapterOut.bind(this)
   }

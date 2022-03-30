@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from 'axios'
-import { is } from 'ramda'
+import { asserts } from '../../utils'
 
 export const DEF_TOKEN_KEY = 'token'
 
@@ -29,7 +29,7 @@ export function token(getToken: string | ((ctx?: AxiosRequestConfig) => string),
     if(!ctx.headers){
       ctx.headers = {}
     }
-    ctx.headers[tokenProp] = is(String, getToken) ? getToken : getToken(ctx)
+    ctx.headers[tokenProp] = asserts.isString(getToken) ? getToken : getToken(ctx)
     return ctx
   }
 

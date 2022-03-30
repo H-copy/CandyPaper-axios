@@ -15,7 +15,7 @@ const extensions = [
 
 const tsPlugin = ts({
   tsconfig: getPath('./tsconfig.json'),
-  // extensions
+  sourceMap: false
 })
 
 // const esPlugin = eslint({
@@ -24,41 +24,50 @@ const tsPlugin = ts({
 //   exclude: ['node_modules/**', 'lib/**']
 // })
 
-const commonConf = {
+const common = {
   input: getPath('./src/index.ts'),
   plugins: [
     resolve(extensions),
     commonjs(),
-    // esPlugin,
     tsPlugin,
-  ]
+  ],
+  external: ['axios']
 }
 
-const outputMap = [
-  {
+const umdBuild = {
+  ...common,
+  output: {
     file: packageJSON.main,
     format: 'umd',
-  },
-  {
+    name: packageJSON.name
+  }
+}
+
+const esBuild = {
+  ...common,
+  output: {
     file: packageJSON.module,
     format: 'es',
+    name: packageJSON.name
+
   }
-]
+}
+
 
 const types = {
-  input: commonConf.input,
+  ...common,
   output: {
     file: packageJSON.typings,
-    format: 'es'
+    format: 'es',
   },
   plugins: [
     dts()
-  ]
+  ],
 }
 
-const buildConf = options => Object.assign({}, commonConf, options)
 
 export default [
-  ...outputMap.map(output => buildConf({ output: { name: packageJSON.name, ...output } })),
+  umdBuild,
+  esBuild,
   types
 ] 

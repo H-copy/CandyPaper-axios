@@ -1,7 +1,6 @@
 import { AxiosRequestConfig, AxiosResponse } from 'axios'
-import { is } from 'ramda'
 import { AxiosInterceptor, CandyInterceptor } from '../../common'
-import { dataToString, LStorage, StorageType } from '../../utils'
+import { dataToString, LStorage, StorageType, asserts } from '../../utils'
 
 
 function defSaveKey(){
@@ -127,7 +126,7 @@ export class Cache<T = AxiosRequestConfig>{
         return ctx
       }
 
-      if(is(Number, ctx.$cache)){
+      if(asserts.isNumber(ctx.$cache)){
         const timeDiff = new Date().getTime() - ctx.$cache
         if(timeDiff <= 0){
           this._cache.delete(key)

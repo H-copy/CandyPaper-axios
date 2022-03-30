@@ -1,7 +1,6 @@
-import axios from 'axios'
+// import axios from 'axios'
 import type { AxiosRequestConfig, AxiosInstance, AxiosResponse } from 'axios'
 import { Interceptor } from './interceptor'
-import { is } from 'ramda'
 
 
 export class CandyPaper{
@@ -19,10 +18,14 @@ export class CandyPaper{
    * 1. new CandyPaper({ baseUrl: '/' })
    * 2. new CandyPaper(axios.create({baseUrl: '/'}))
    */
-  constructor(config?: AxiosInstance)
-  constructor(config?: AxiosRequestConfig)
-  constructor(config?: AxiosRequestConfig | AxiosInstance){
-    this.candy =  is(Function, config) ? config : axios.create(config)
+  // constructor(config?: AxiosInstance)
+  // constructor(config?: AxiosRequestConfig)
+  // constructor(config?: AxiosRequestConfig | AxiosInstance){
+  //   this.candy =  is(Function, config) ? config : axios.create(config)
+  // }
+
+  constructor(axiosInstance: AxiosInstance) {
+    this.candy = axiosInstance
   }
 
   // 重组请求拦截器列表
