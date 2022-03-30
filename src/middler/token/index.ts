@@ -1,7 +1,7 @@
 import { AxiosRequestConfig } from 'axios'
 import { is } from 'ramda'
 
-
+export const DEF_TOKEN_KEY = 'token'
 
 /**
  * 设置token
@@ -25,11 +25,15 @@ export type TokenFiulfilled = (ctx: AxiosRequestConfig) => AxiosRequestConfig
 export function token(getToken: string, tokenProp?: string): TokenFiulfilled
 export function token(getToken: ((ctx?: AxiosRequestConfig) => string), tokenProp?: string): TokenFiulfilled
 export function token(getToken: string | ((ctx?: AxiosRequestConfig) => string), tokenProp = 'token'): TokenFiulfilled {
-  return (ctx: AxiosRequestConfig) => {
+  const cb = (ctx: AxiosRequestConfig) => {
     if(!ctx.headers){
       ctx.headers = {}
     }
     ctx.headers[tokenProp] = is(String, getToken) ? getToken : getToken(ctx)
     return ctx
   }
+
+  // 默认中间件注册id
+  cb.key = DEF_TOKEN_KEY
+  return cb
 }

@@ -1,5 +1,5 @@
-import { dataToString, isReqCancel } from '../utils'
-import { AxiosInterceptor, CandyInterceptor } from '../common'
+import { dataToString, isReqCancel } from '../../utils'
+import { AxiosInterceptor, CandyInterceptor } from '../../common'
 import { AxiosResponse } from 'axios'
 
 abstract class TipsSource<T = any>{
@@ -64,9 +64,12 @@ const defExcludes:Condition[] = [
 
 export class Tips<T = any> extends TipsSource<T>{
 
+  // 自定义输出
   print: (msg: string) => void
-  includes: Condition[] = defIncludes
-  excludes: Condition[] = defExcludes
+  
+  // 错误筛选
+  errExcludes: Condition[] = defExcludes
+  errIncludes: Condition[] = defIncludes
   
   constructor(print?:(msg: string) => void){
     super()
@@ -79,12 +82,12 @@ export class Tips<T = any> extends TipsSource<T>{
 
   onReject(){
     return (e: any) => {
-      const exclude = this.excludes.find(i => i.if(e))
+      const exclude = this.errExcludes.find(i => i.if(e))
       if(exclude){
         return Promise.reject(exclude.act(e))
       }
 
-      const include = this.includes.find(i => i.if(e))
+      const include = this.errIncludes.find(i => i.if(e))
       if(include){
         this.print(include.act(e))
       }

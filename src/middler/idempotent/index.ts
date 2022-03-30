@@ -1,8 +1,8 @@
 import type { CancelTokenSource, AxiosRequestConfig, AxiosResponse, AxiosInterceptorManager } from 'axios'
 import axios from 'axios'
 import { is } from 'ramda'
-import { Lmap, dataToString } from '../utils'
-import { AxiosInterceptor, CandyInterceptor } from '../common'
+import { Lmap, dataToString } from '../../utils'
+import { AxiosInterceptor, CandyInterceptor } from '../../common'
 
 
 export interface IdempotentOptions<T = any>{

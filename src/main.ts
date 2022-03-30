@@ -38,10 +38,9 @@ const timetamp = middler.timetamp()
 
 http.interceptor.request
 .use(
-  'token',
   middler.token(
     () => 'xxx-xxx-xxx'
-  ) 
+  )
 )
 .use(
   'timetamp',
@@ -74,13 +73,14 @@ http.interceptor.response
   'res2',
   (v: AxiosResponse) => {
     console.log('res 2')
-    // return Promise.reject('xxx')
+    return Promise.reject({
+      message: 'error',
+    })
     return v
   }
 )
 
 tips.withInterceptor(http.interceptor)
-
 
 http.interceptor.request.useOnce(
   'key',

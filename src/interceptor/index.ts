@@ -1,13 +1,11 @@
 import { 
   AxiosRequestConfig, 
-  AxiosResponse,
   InterceptorHandler,
   Fulfilled,
   Rejected,
   RunWhen,
-  AxiosInterceptorManager
 } from 'axios'
-import { Lmap } from './utils'
+import { Lmap } from '../utils'
 import  { is } from 'ramda'
 
 interface  InterceptorItem <T = any> extends InterceptorHandler <T> {

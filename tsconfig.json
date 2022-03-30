@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
+    "target": "esnext",
     "useDefineForClassFields": true,
-    "module": "ESNext",
-    "lib": ["ESNext", "DOM"],
-    "moduleResolution": "Node",
+    "module": "esnext",
+    "lib": ["esnext", "dom"],
+    "moduleResolution": "node",
+    "allowJs": false,
     "strict": true,
     "sourceMap": true,
     "resolveJsonModule": true,
@@ -12,8 +13,13 @@
     "noEmit": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
+    "experimentalDecorators": true,
+    "outDir": "./lib",
+    "declaration": true,
+    "declarationDir": "lib/types",
     "typeRoots": [
-      "types/"
+      "node_modules/@types",
+      "types"
     ],
     "noImplicitReturns": false
     

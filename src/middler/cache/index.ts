@@ -1,7 +1,7 @@
 import { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { is } from 'ramda'
-import { AxiosInterceptor, CandyInterceptor } from '../common'
-import { dataToString, LStorage, StorageType } from '../utils'
+import { AxiosInterceptor, CandyInterceptor } from '../../common'
+import { dataToString, LStorage, StorageType } from '../../utils'
 
 
 function defSaveKey(){
