@@ -47,7 +47,6 @@ export class CandyPaper{
     const middleResponses = this.interceptor.response.queupUp(ctx)
     this.candy.interceptors.response.handlers = [
       ...interceptorResponses,
-      // ...responseOnceList,
       ...middleResponses
     ]
   }
@@ -56,5 +55,22 @@ export class CandyPaper{
     this.resetInterceptors(options)
     return this.candy(options)
   }
+
+  get<T>(url: string, options: Omit<AxiosRequestConfig<T>, 'url' | 'method'> ){
+    return this.request({
+      url,
+      method: 'get',
+      ...options
+    })
+  }
+
+  post<T>(url: string, options: Omit<AxiosRequestConfig<T>, 'url' | 'method'>) {
+    return this.request({
+      url,
+      method: 'post',
+      ...options
+    })
+  }
+  
   
 }
