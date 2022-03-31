@@ -140,6 +140,10 @@ export class IdempotentForAxios<T = any>{
     return [reqCancelKey, resCancelKey]
   }
 
+  install(){
+    
+  }
+  
 }
 
 
@@ -152,6 +156,10 @@ export class IdempotentForAxios<T = any>{
  * @function withInterceptor 拦截器绑定
  */
 export class IdempotentForCandyParper<T = any>{
+
+  static create<T>(idempotent: Idempotent<T>){
+    return new IdempotentForCandyParper(idempotent)
+  }
   
   protected idempotent: Idempotent<T>
   
