@@ -1,8 +1,16 @@
-import type { CancelTokenSource, CancelTokenStatic, AxiosRequestConfig, AxiosResponse, AxiosInterceptorManager } from 'axios'
+import type {
+  CancelTokenSource,
+  CancelTokenStatic,
+  AxiosRequestConfig, 
+  AxiosResponse, 
+  AxiosInstance, 
+  Fulfilled
+} from 'axios'
 import { Lmap, dataToString, asserts } from '../../utils'
-import { AxiosInterceptor, CandyInterceptor } from '../../common'
 import { CandyPaper } from '../../core'
 
+
+export const DEF_IDEMPOTENT_KEY = 'idempotent'
 
 export interface IdempotentOptions<T = any>{
   url?: string,
@@ -32,16 +40,17 @@ export function defSaveKey(ctx: IdempotentOptions){
  * @function cancel 取消请求
  */
 export class Idempotent<T = any> {
-
-  cancelToken: CancelTokenStatic
+  static cancelToken: CancelTokenStatic
+  static withCancelToken(cancelToken: CancelTokenStatic){
+    Idempotent.cancelToken = cancelToken
+  }
 
    _map:Lmap<string, CancelTokenSource> = new Lmap()
   
   // 自定义缓存key生成器
   creatSaveKey: (ctx: T) => string
 
-  constructor(cancelToken: CancelTokenStatic, creatSaveKey?: (ctx: T) => string){
-    this.cancelToken = cancelToken
+  constructor(creatSaveKey?: (ctx: T) => string){
     this.creatSaveKey = creatSaveKey || defSaveKey
   }
   
@@ -56,11 +65,14 @@ export class Idempotent<T = any> {
    * @returns source
    */
   inPip(ctx: T, message?: string){
+    if(!Idempotent.cancelToken){
+      throw new Error('未绑定cancelToken对象')
+    }
     const key = this.creatSaveKey(ctx)
     if(this._map.has(key)){
       this.cancel(key, message || key)
     }
-    const source = this.cancelToken.source()
+    const source = Idempotent.cancelToken.source()
     this._map.$set(key, source)
     return source
   }
@@ -130,17 +142,17 @@ export class IdempotentForAxios<T = any>{
     }
   }
 
-  withInterceptor(interceptor: AxiosInterceptor){
-    const reqCancelKey = interceptor.request.use(
+  install(axios: AxiosInstance){
+    const reqCancelKey = axios.interceptors.request.use(
       this.adapterIn()
     )
 
-    const resCancelKey = interceptor.response.use(
+    const resCancelKey = axios.interceptors.response.use(
       this.adapterOut(),
     )
     return [reqCancelKey, resCancelKey]
   }
-  
+
 }
 
 
@@ -154,36 +166,41 @@ export class IdempotentForAxios<T = any>{
  */
 export class IdempotentForCandyParper<T = any>{
 
-  static create<T>(idempotent: Idempotent<T>){
+  installKey: IndexKey = DEF_IDEMPOTENT_KEY
+  static create<T>(idempotent?: Idempotent<T>){
     return new IdempotentForCandyParper(idempotent)
   }
 
-  protected idempotent: Idempotent<T>
+  idempotent: Idempotent<T>
   
-  constructor(idempotent: Idempotent<T>){
-    this.idempotent = idempotent
-    this.adapterIn.bind(this)
-    this.adapterOut.bind(this)
+  constructor(idempotent?: Idempotent<T>){
+    this.idempotent = idempotent || new Idempotent()
   }
 
   adapterIn(){
-    return (ctx: AxiosRequestConfig) => {
+    const cb:Fulfilled = (ctx: AxiosRequestConfig) => {
       if(!ctx.cancelToken){
         const source = this.idempotent.inPip(ctx as any)
         ctx.cancelToken = source.token
       }
       return ctx
     }
+
+    cb.key = this.installKey
+    return cb
   }
 
-  adapterOut(){
-    return (ctx:AxiosResponse) => {
+  adapterOut():Fulfilled{
+    const cb:Fulfilled = (ctx:AxiosResponse) => {
       this.idempotent.outPip(ctx.config.cancelToken as any)
       return ctx
     }
+    cb.key = this.installKey
+    return cb
   }
 
   install(candyPaper: CandyPaper){
+
     candyPaper.interceptor.request.use(
       this.adapterIn()
     )

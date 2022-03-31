@@ -6,6 +6,8 @@
 import axios from 'axios'
 import { CandyPaper, middler } from './src'
 
+Idempotent.withCancelToken(axios.cancelToken)
+// 挂载取消生成器
 const idempotent = new middler.Idempotent(axios.CancelToken)
 
 const http = new CandyPaper({
@@ -33,11 +35,11 @@ http.interceptor.response
 
 // axios 拦截器绑定
 const idempotent = new middler.IdempotentForAxios(axios.CancelToken)
-idempotent.withInterceptor(http.candy.interceptor)
+idempotent.install(http.candy)
 
 // candyPaper 中间件
 const idempotent = new middler.withInterceptor(axios.CancelToken)
-idempotent.withInterceptor(http.interceptor)
+http.use(idempotent)
 
 
 ```
@@ -61,7 +63,6 @@ const idempotent = new middler.Idempotent(axios.CancelToken)
 const keys = idempotent._map.list
 
 ```
-
 
 ## tips
 1. 如果请求配置了`cancelToken`, 将调换中间件处理逻辑（中间件将失效，需要用户自己控制何时取消请求）
