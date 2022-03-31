@@ -1,4 +1,4 @@
-import { AxiosRequestConfig } from 'axios'
+import { AxiosRequestConfig, Fulfilled } from 'axios'
 import { CandyPaper } from '../../core'
 import { asserts } from '../../utils'
 
@@ -52,7 +52,7 @@ export class Token {
   }
 
   adapter (){
-    const cb = (ctx: AxiosRequestConfig) => {
+    const cb:Fulfilled = (ctx: AxiosRequestConfig) => {
       if (!ctx.headers) {
         ctx.headers = {}
       }

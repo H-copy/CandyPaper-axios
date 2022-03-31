@@ -1,6 +1,7 @@
 import type { CancelTokenSource, CancelTokenStatic, AxiosRequestConfig, AxiosResponse, AxiosInterceptorManager } from 'axios'
 import { Lmap, dataToString, asserts } from '../../utils'
 import { AxiosInterceptor, CandyInterceptor } from '../../common'
+import { CandyPaper } from '../../core'
 
 
 export interface IdempotentOptions<T = any>{
@@ -139,10 +140,6 @@ export class IdempotentForAxios<T = any>{
     )
     return [reqCancelKey, resCancelKey]
   }
-
-  install(){
-    
-  }
   
 }
 
@@ -160,7 +157,7 @@ export class IdempotentForCandyParper<T = any>{
   static create<T>(idempotent: Idempotent<T>){
     return new IdempotentForCandyParper(idempotent)
   }
-  
+
   protected idempotent: Idempotent<T>
   
   constructor(idempotent: Idempotent<T>){
@@ -186,15 +183,13 @@ export class IdempotentForCandyParper<T = any>{
     }
   }
 
-  withInterceptor(interceptor: CandyInterceptor, key: IndexKey = 'idempotentForCandyParper'){
-    interceptor.request.use(
-      key,
+  install(candyPaper: CandyPaper){
+    candyPaper.interceptor.request.use(
       this.adapterIn()
     )
-    interceptor.response.use(
-      key,
-      this.adapterOut(),
+    candyPaper.interceptor.response.use(
+      this.adapterOut()
     )
-
   }
+  
 }
