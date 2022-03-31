@@ -8,31 +8,54 @@ const http = new CandyPaper({
   baseUrl: 'https://www.baidu.com'
 })
 
+const token = middler.Token.create(
+  () => localStorage.setItem('token')
+)
+
 http.interceptor.request
 .use(
-  middler.token(
-    () => localStorage.setItem('token')
-  )
+  token.adapter()
 )
+
+// or
+
+http.use(token)
 
 ```
 
 ## 配置
 
+### token获取方式
 ```ts
 
 http.interceptor.request
   // 固定token
 .use(
-  middler.token('xxx-xxx-xx')
+  middler.Token.create('xxx-xxx-xx').adapter()
 )
 
 // 动态token
-middler.token((ctx: AxiosRequestConfig) => {
+middler.Token.create((ctx: AxiosRequestConfig) => {
   return sessionstorage.getItem('token')
 })
+```
 
+
+### 指定token挂载属性
+```ts
 // 指定header挂载属性, 默认 token
-middler.token('xxx-xxx-xx', 'authentication')
+middler.Token.create('xxx-xxx-xx', 'authentication')
+```
+
+### install
+Token类实现了CandyPaper注册接口, 方便快速绑定。
+```ts
+
+candyPaper.use(
+  middler.Token('xxx-xxx-xxx')
+)
 
 ```
+
+
+
