@@ -12,7 +12,10 @@
 ## 🚀 快速使用
 ```ts
 import { CandyPaper, middler } from './src'
-import { axios } from 'axios'
+import axios from 'axios'
+
+// 全局绑定axios
+CandyPaper.withAxios(axios)
 
 const http = new CandyPaper(
   axios.create({
@@ -21,19 +24,21 @@ const http = new CandyPaper(
   })
 )
 
-http.interceptor.request
+// 错误提示
+const tips = new middler.TipsForCandyPeper() 
+
+http
 // 添加url时间戳
 .use(
-  middler.timetamp()
+  middler.Timetamp.create()
 )
 // 添加token设置
 .use(
-  middler.token(() => 'xxx-xxx-xxx')
+  middler.Token.create(() => 'xxx-xxx-xxx')
 )
-
-// 错误提示
-const tips = new middler.TipsForCandyPeper() 
-tips.withInterceptor(tips)
+.use(
+  tips
+)
 
 
 // 请求
