@@ -163,6 +163,6 @@ http.get('/', {
 - [x] [tips 错误提示](./src/middler//tips/README.md)
 - [x] [cache 请求缓存](./src//middler/cache//README.md)
 - [x] [idempotent 幂等](./src/middler/idempotent/README.md)
-- [x] status 状态码
+- [x] [status 状态码](./src//middler/status/README.md)
 - [ ] log 日志
 <!-- - [ ] playback 回放 -->
