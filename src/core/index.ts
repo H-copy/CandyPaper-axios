@@ -1,4 +1,5 @@
 import type { AxiosRequestConfig, AxiosInstance, AxiosResponse, AxiosStatic } from 'axios'
+import axios from 'axios'
 import { Interceptor } from '../interceptor'
 import { asserts } from '../utils'
 
@@ -10,13 +11,9 @@ export type CandyPaperUse = { install: CandyPaperInstall } | CandyPaperInstall
 
 export class CandyPaper{
 
-  static axios?: AxiosStatic
+  static axios: AxiosStatic = axios
 
-  static withAxios(axios: AxiosStatic) {
-    CandyPaper.axios = axios
-  }
-  
-  candy?: AxiosInstance
+  candy: AxiosInstance
 
   interceptor = {
     request: new Interceptor<AxiosRequestConfig>(),
@@ -35,9 +32,9 @@ export class CandyPaper{
   constructor(config?: AxiosRequestConfig | AxiosInstance){
     if(asserts.isFunction(config)){
       this.candy = config
-    }else if(CandyPaper.axios){
-      this.candy = CandyPaper.axios.create(config)
     }
+    this.candy = CandyPaper.axios.create(config as AxiosRequestConfig)
+    
   }
 
   // 重组请求拦截器列表
@@ -77,9 +74,6 @@ export class CandyPaper{
   }
 
   request(options: AxiosRequestConfig){
-    if(!this.candy){
-      throw new Error(`未注册axios对象, 使用CandyPaper.withAxios(AxiosStatic), 或创建时传入axios实例`)
-    }
     this.resetInterceptors(options, this.candy)
     return this.candy(options)
   }

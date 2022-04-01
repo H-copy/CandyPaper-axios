@@ -1,12 +1,8 @@
-import axios from 'axios'
 import { CandyPaper } from '../../../core'
 import { buildReqConf, httpConf } from '../../../utils/test-mock'
-import { Idempotent, IdempotentForCandyParper } from '../index'
+import { IdempotentForCandyParper } from '../index'
 
-CandyPaper.withAxios(axios)
-Idempotent.withCancelToken(axios.CancelToken)
-
-describe('middler', () => {
+describe('middler idempotent', () => {
 
   let http = new CandyPaper(httpConf)
 

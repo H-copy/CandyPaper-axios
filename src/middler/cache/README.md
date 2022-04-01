@@ -30,15 +30,13 @@ http.interceptor.response.use(
 ### 快速绑定
 ```ts
 
-const mapStore = new middler.CacheByMap()
-
 // axios 拦截器模式
-const cache = new middler.CacheForAxios(mapStore)
-cache.withInterceptor(cache)
+const cache = new middler.CacheForAxios()
+http.candy.install(cache)
 
 // candyPaper 中间件模式
-const cache = new middler.CacheForCandyPaper(mapStore)
-cache.withInterceptor()
+const cache = new middler.CacheForCandyPaper()
+http.use(cache)
 
 ```
 
@@ -55,6 +53,10 @@ const sessionStorageStore = new middler.CacheByStorage('sessionStorage')
 
 // localStorage
 const localStorageStore = new middler.CacheByStorage('localStorage')
+
+const cacheByMap = new middler.CacheForCandyPaper(mapStore)
+const cacheByStorage = new middler.CacheForCandyPaper(sessionStorageStore)
+
 
 ```
 

@@ -1,9 +1,6 @@
-import axios from 'axios'
 import { CandyPaper } from '../../../core'
 import { buildReqConf, httpConf } from '../../../utils/test-mock'
 import { TimeTamp } from '../index'
-
-CandyPaper.withAxios(axios)
 
 describe('middler timetamp', () => {
 

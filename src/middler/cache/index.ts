@@ -1,7 +1,10 @@
-import { AxiosRequestConfig, AxiosResponse } from 'axios'
-import { AxiosInterceptor, CandyInterceptor } from '../../common'
+import type { AxiosRequestConfig, AxiosResponse, AxiosInstance } from 'axios'
+import type { AxiosInterceptor, CandyInterceptor } from '../../common'
+import { CandyPaper } from '../../core'
 import { dataToString, LStorage, StorageType, asserts } from '../../utils'
 
+
+export const DEF_CACHE_KEY = 'cache'
 
 function defSaveKey(){
   return new Date().getTime() + (Math.random() * 100).toFixed(0)
@@ -156,7 +159,7 @@ export class Cache<T = AxiosRequestConfig>{
     return (ctx: AxiosResponse) => {
       const key = this.creatSaveKey(ctx.config)
       const _d = this._cache.take(key)
-      if(ctx.config.$cache && _d !== this._emptyFlag){
+      if(ctx.config.$cache && _d === this._emptyFlag){
         this._cache.save(ctx, key)
       }
       return ctx
@@ -167,39 +170,49 @@ export class Cache<T = AxiosRequestConfig>{
 
 // axios 接口适配
 export class CacheForAxios<T> extends Cache<T>{
+
+  static create<T>(cache?: ICache<T>) {
+    return new CacheForAxios(cache)
+  }
+  
   constructor(cache?: ICache<T>) {
     super(cache)
   }
-
-  withInterceptor(interceptor: AxiosInterceptor) {
-    const reqCancelKey = interceptor.request.use(
+  
+  install(axios: AxiosInstance){
+    axios.interceptors.request.use(
       this.adapterIn()
     )
 
-    const resCancelKey = interceptor.response.use(
+    axios.interceptors.response.use(
       this.adapterOut()
     )
-    return [reqCancelKey, resCancelKey]
   }
+  
 }
 
 // candyPaper 接口适配
 export class CacheForCandyPaper<T> extends Cache<T>{
+  
+  static create<T>(cache?: ICache<T>) {
+    return new CacheForCandyPaper(cache)
+  }
+  
+  installKey:IndexKey = DEF_CACHE_KEY
+
   constructor(cache?: ICache<T>) {
     super(cache)
   }
 
-  withInterceptor(interceptor: CandyInterceptor, key:IndexKey = 'cache') {
-    interceptor.request.use(
-      key,
+  install(candyPaper: CandyPaper){
+    candyPaper.interceptor.request.use(
+      this.installKey,
       this.adapterIn()
     )
-
-   interceptor.response.use(
-      key,
+    candyPaper.interceptor.response.use(
+      this.installKey,
       this.adapterOut()
     )
-    return [key, key]
   }
 }
 

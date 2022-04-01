@@ -6,6 +6,7 @@ import type {
   AxiosInstance, 
   Fulfilled
 } from 'axios'
+import axios from 'axios'
 import { Lmap, dataToString, asserts } from '../../utils'
 import { CandyPaper } from '../../core'
 
@@ -40,10 +41,7 @@ export function defSaveKey(ctx: IdempotentOptions){
  * @function cancel 取消请求
  */
 export class Idempotent<T = any> {
-  static cancelToken: CancelTokenStatic
-  static withCancelToken(cancelToken: CancelTokenStatic){
-    Idempotent.cancelToken = cancelToken
-  }
+  static cancelToken: CancelTokenStatic = axios.CancelToken
 
    _map:Lmap<string, CancelTokenSource> = new Lmap()
   
@@ -113,7 +111,7 @@ export class Idempotent<T = any> {
  * 基于axios拦截器的封装
  * @function adapterIn 请求端拦截
  * @function adapterOut 响应端拦截
- * @function withInterceptor 拦截器绑定
+ * @function install 拦截器绑定
  */
 export class IdempotentForAxios<T = any>{
   protected idempotent: Idempotent<T>
@@ -162,7 +160,7 @@ export class IdempotentForAxios<T = any>{
  * 基于中间件模式的, 去重封装
  * @function adapterIn 请求端拦截
  * @function adapterOut 响应端拦截
- * @function withInterceptor 拦截器绑定
+ * @function install 拦截器绑定
  */
 export class IdempotentForCandyParper<T = any>{
 

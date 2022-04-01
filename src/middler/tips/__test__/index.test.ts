@@ -1,9 +1,7 @@
-import axios, { AxiosResponse } from 'axios'
+import type { AxiosResponse } from 'axios'
 import { CandyPaper } from '../../../core'
 import { buildReqConf, httpConf } from '../../../utils/test-mock'
 import { TipsForCandyPaper } from '../index'
-
-CandyPaper.withAxios(axios)
 
 describe('middler tips', () => {
 

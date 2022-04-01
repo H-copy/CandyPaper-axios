@@ -14,9 +14,6 @@
 import { CandyPaper, middler } from './src'
 import axios from 'axios'
 
-// 全局绑定axios
-CandyPaper.withAxios(axios)
-
 const http = new CandyPaper(
   axios.create({
     baseUrl: '/',

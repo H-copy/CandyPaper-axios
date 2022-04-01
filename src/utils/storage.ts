@@ -1,14 +1,17 @@
+import { getGlobal } from './global'
 
 export type StorageType = 'localStorage' | 'sessionStorage'
 
+const global = getGlobal()
+
 export class LStorage {
-  storage: Storage = sessionStorage
+  storage: Storage = global.sessionStorage
   type: StorageType = 'sessionStorage'
 
   constructor(type?: StorageType) {
-    this.storage = type === 'localStorage' ? localStorage : sessionStorage
+    this.storage = type === 'localStorage' ? global.localStorage : global.sessionStorage
     if(!this.storage){
-      console.error(`${this.type}: 不存在`)
+      throw new Error(`${this.type}: 不存在`)
     }
   }
 
