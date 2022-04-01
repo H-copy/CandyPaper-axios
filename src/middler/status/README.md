@@ -25,9 +25,21 @@ status.add(
 
 ## 配置
 
-### 状态规则模式
+### 适配类
+```ts
+// 适配axios对象
+StatusForAxios.install(axios)
 
-1. 单一状态
+// 适配CandyPaper 对象
+const http = new CandyPaper()
+const status = StatusForCandyPaper.create()
+http.use(
+  status
+)
+
+```
+
+### 状态规则模式
 ```ts
 // 接收需要捕获的状态码,  
 status.add(
@@ -55,3 +67,21 @@ status.add(
 )
 
 ```
+
+### 移除规则
+`remove` 接收`add`状态规则作为移除标识
+```ts
+const code = 410
+status.add(code, () =>)
+status.remove(code)
+```
+
+### Status API
+- add(rule, act) 添加规则
+- remove(rule) 移除规则
+- clear() 清空规则
+- len() 规则条数
+
+- adapterRs(ctx: AxiosResponse) `resolve`端接口
+- adapterRj(e: any) `reject`端接口
+- run(ctx: StatusCtx) 执行规则
