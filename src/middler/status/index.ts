@@ -11,9 +11,6 @@ export const enum CUM_CODE {
   UNKNOWN_RES = -2
 }
 
-export type StatusCode = number 
-export type StatusCodeRange = [number, number]
-
 export interface StatusCtx<T = any> {
   config: AxiosRequestConfig;
   data?: T
@@ -21,6 +18,9 @@ export interface StatusCtx<T = any> {
   response?: AxiosResponse
   request?: any
 }
+
+export type StatusCode = number 
+export type StatusCodeRange = [number, number]
 
 export interface StatusValidate<T = any> {
   (ctx: StatusCtx<T>): boolean

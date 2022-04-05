@@ -118,7 +118,21 @@ http.interceptor.request(
 
 ### 注销
 ```ts
-http.interceptor.request.eject('req1')
+
+const log = (ctx: AxiosRequestConfig) => {
+  console.log(ctx.url)
+  return ctx
+}
+http.interceptor.request.use(
+  'log',
+  log
+) // 注册
+
+// 通过注册标识注销
+http.interceptor.request.eject('log')
+
+// 也接收对应的拦截器函数，在注册拦截器时，将为对应的函数设置key标识。
+http.interceptor.request.eject(log) // 注销
 ```
 
 ### 筛选
@@ -149,6 +163,39 @@ http.get('/', {
   // 排除时间戳拦截器f
   $intercepteFilter: (keys: IndexKey[]) => {
     return keys.includes(key => /^res/igm.test(key))
+  }
+})
+
+```
+
+### 一次性拦截器
+一次性拦截器，在被加入执行队列后及将被移除。 如果拦截器一直未被调用将一直存在拦截器队列中
+```ts
+
+// 方法参数与use一致
+http.useOnce(
+  'once',
+  (ctx: AxiosRequestConfig) => {}
+)
+
+```
+### 独立拦截器
+请求端可以为当前请求配置独立执行的拦截器。
+这里的拦截器通过`useOnce`注册到拦截器队列中，所以在被调用后将被注销。也就不会影响其他请求的处理。
+```ts
+
+http.get('/', {
+  $interceptor: {
+    request: [
+      {
+        key: 'log',
+        fulfilled(ctx: AxiosRequestConfig){
+          console.log(ctx.url)
+          return ctx
+        } 
+      }
+    ],
+    response: []
   }
 })
 

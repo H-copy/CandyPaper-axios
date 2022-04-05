@@ -85,3 +85,5 @@ status.remove(code)
 - adapterRs(ctx: AxiosResponse) `resolve`端接口
 - adapterRj(e: any) `reject`端接口
 - run(ctx: StatusCtx) 执行规则
+
+
