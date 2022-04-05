@@ -111,8 +111,8 @@ export class TipsForAxios extends Tips<AxiosResponse> {
 
   install(candyPaper: CandyPaper){
     candyPaper.interceptor.response.use(
+      this.onReslove(),
       this.onReject(),
-      this.onReslove()
     )
   }
 }
@@ -127,8 +127,8 @@ export class TipsForCandyPaper extends Tips<AxiosResponse>{
   install(candyPaper: CandyPaper) {
     candyPaper.interceptor.response.use(
       this.tipsKey,
+      this.onReslove(),
       this.onReject(),
-      this.onReslove()
     )
   }
 }
