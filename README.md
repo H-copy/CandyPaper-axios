@@ -1,6 +1,14 @@
 # CandyPaper 
 对 axios 的简单包装例子，提供常用的拦截器工具。
 
+
+## 安装
+```shell
+
+npm i -S candypaper
+
+```
+
 ## 📃 功能列表
 - [x] 拦截器扩展
 - [x] 常用中间件
