@@ -27,6 +27,7 @@
     "lib",
     "types",
     "README.md",
+    "src",
     "package.json"
   ],
   "keywords": [
