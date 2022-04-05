@@ -24,6 +24,12 @@
     "tslib": "*",
     "typescript": "^4.5.4"
   },
+  "files": [
+    "lib",
+    "types",
+    "README.md",
+    "package.json"
+  ],
   "keywords": [
     "CandyPaper",
     "axios",
