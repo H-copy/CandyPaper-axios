@@ -1,5 +1,5 @@
 {
-  "name": "candyPaper",
+  "name": "candypaper",
   "version": "0.1.0",
   "module": "lib/index.es.js",
   "main": "lib/index.umd.js",
