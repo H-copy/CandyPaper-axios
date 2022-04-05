@@ -6,10 +6,8 @@
   "main": "lib/index.umd.js",
   "typings": "lib/types.d.ts",
   "scripts": {
-    "dev": "vite",
-    "build": "rm -fr lib && set NODE_ENV=production&& rollup -c rollup.config.js",
-    "test": "jest --coverage",
-    "preview": "vite preview"
+    "build": "rm -fr lib && rollup -c rollup.config.js",
+    "test": "jest --coverage"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^21.0.3",
@@ -26,10 +24,19 @@
     "tslib": "*",
     "typescript": "^4.5.4"
   },
+  "keywords": [
+    "CandyPaper",
+    "axios",
+    "copy-left",
+    "copyLeft"
+  ],
   "dependencies": {
     "ramda": "^0.28.0"
   },
   "peerDependencies": {
     "axios": "^0.26.1"
-  }
+  },
+  "homepage": "https://github.com/H-copy/CandyPaper-axios",
+  "author": "copy-left",
+  "license": "MIT"
 }
