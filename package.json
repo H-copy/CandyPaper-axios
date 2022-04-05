@@ -1,6 +1,6 @@
 {
   "name": "candypaper",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "module": "lib/index.es.js",
   "main": "lib/index.umd.js",
   "typings": "lib/types.d.ts",
